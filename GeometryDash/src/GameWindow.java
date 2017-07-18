@@ -25,7 +25,7 @@ public class GameWindow
 		frame = new JFrame();
 		frame.setSize(width, height);
 		frame.setUndecorated(true);
-		frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addKeyListener(new KeyListener()
 		{
 
