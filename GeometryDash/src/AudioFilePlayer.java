@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.FileInputStream;
 
 import javazoom.jl.player.Player;
@@ -7,20 +8,14 @@ public class AudioFilePlayer implements Runnable {
 
 	}
 
-	public void run()
-	{
-		while(true)
-		{
-			try
-			{
-				String p = "C:\\Users\\Maximillian Holzvoig\\JavaMitFreunden\\GeometryDash\\src\\Techno.mp3";
-				FileInputStream in = new FileInputStream(p);
+	public void run() {
+		while (true) {
+			try {
+				FileInputStream in = new FileInputStream(new File("./Techno.mp3"));
 				Player pl = new Player(in);
 				pl.play();
-			}catch(Exception e)
-			{
-				e.printStackTrace();			
-			}	
+			} catch (Exception e) {
+			}
 		}
 	}
 }
