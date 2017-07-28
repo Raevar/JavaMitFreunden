@@ -9,7 +9,7 @@ public class Obstacles extends JPanel
 	public Obstacles(int x, int y, Color color)
 	{
 		this.color = color;
-		setBounds(x, y, 50, 50);
+		setBounds(x, y, GameWindow.getInstance().size,GameWindow.getInstance().size);
 	}
 
 	public void scroll()
