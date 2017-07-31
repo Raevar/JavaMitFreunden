@@ -35,6 +35,7 @@ public class Square extends JPanel
 		button.setBackground(Color.DARK_GRAY);
 		button.setBorderPainted(true);
 		button.setFont(button.getFont().deriveFont(32f));
+		button.setForeground(Color.RED);
 		add(button);
 		area = new JTextArea();
 	}

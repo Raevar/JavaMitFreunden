@@ -18,6 +18,8 @@ public class GameWindow implements Updater {
 	ArrayList<Square> ground;
 	private int r, g, b;
 	Color c;
+	Time time;
+	public static boolean gameover = false;
 
 	private GameWindow() {
 		r = 100;
@@ -63,6 +65,8 @@ public class GameWindow implements Updater {
 
 		});
 		panel = new JPanel();
+		time = new Time(0, 0);
+		panel.add(time);
 		panel.setLayout(null);
 		frame.setLayout(null);
 		panel.setBounds(0, 0, frame.getWidth(), frame.getHeight());
@@ -73,36 +77,72 @@ public class GameWindow implements Updater {
 		setUp();
 	}
 
-	public int checkGround(int x, int y) // Überprüfung Punkt unten
-	{ // 0 kein Boden 1 Boden 2 Spikes
-		if (y == height - size) {
-			for (int i = 0; i < ground.size(); i++) {
-				if (ground.get(i).getX() <= x && ground.get(i).getX() + ground.get(i).getWidth() > x) {
+	public int checkBottom(int x, int y) // Überprüfung Punkt unten (Übergebener Punkt ist Links Oben)
+	{ // 0 kein Boden 1 Boden 2 GameOver
+		if (y > height)
+			return 2;
+		if (y == height - 2 * size) {
+			for (Obstacles o : ground) {
+				if (o.onTop(x, y, size, size))
 					return 1;
-				}
 			}
-			return 0;
 		} else {
-			for (int i = 0; i < obstacles.size(); i++) { // TODO <= +24-25
-				if (obstacles.get(i).getX() < x + 49 && obstacles.get(i).getX() + obstacles.get(i).getWidth() >= x - 49
-						&& obstacles.get(i).getY() == y) {
-					if (obstacles.get(i) instanceof Square) {
+			for (Obstacles o : obstacles) { // TODO <= +24-25
+				if (o.onTop(x, y, size, size)) {
+					if (o instanceof Square)
 						return 1;
-					}
-
+					else
+						return 2;
 				}
 			}
-			return 0;
 		}
+		return 0;
+	}
+
+	public int checkSide(int x, int y) {
+		// 0 alles in Ordnung 2 GameOver
+		for (Obstacles o : obstacles) {
+			if (o.isSide(x, y, size, size)) {
+				return 2;
+			}
+		}
+		return 0;
+	}
+
+	public void GameOver() {
+		gameover = true;
+		try {
+			Thread.sleep(3);
+		} catch (InterruptedException e) {
+		}
+		while (!obstacles.isEmpty()) {
+			Obstacles o = obstacles.remove(0);
+			panel.remove(o);
+		}
+		while (!ground.isEmpty()) {
+			Obstacles o = ground.remove(0);
+			panel.remove(o);
+		}
+		setUp();
+		frame.repaint();
 	}
 
 	public void Obstacle(int x, Color color) {
 		int e = (int) (Math.random() * 7);
 		if (e == 0) {
 			e = (int) (Math.random() * 2) + 1;
-			int y = height - size*2;
+			int y = height - size * 2;
 			for (int i = 0; i < e; i++) {
-				Square s = new Square(x, y, c);
+				Obstacles s = null;
+				if (i == e - 1) {
+					int n = (int) (Math.random() * 2);
+					if (n == 0) {
+						s = new Spikes(x, y + size / 2, size, size / 2, c);
+					} else
+						s = new Square(x, y, size, size, c);
+				} else {
+					s = new Square(x, y, size, size, c);
+				}
 				y -= size;
 				obstacles.add(s);
 				panel.add(s);
@@ -111,21 +151,25 @@ public class GameWindow implements Updater {
 	}
 
 	private void setUp() {
+		time.reset();
 		for (int i = 0; i < width; i += size) {
-			Square s = new Square(i, height - size, c);
+			Square s = new Square(i, height - size, size, size, c);
 			panel.add(s);
 			ground.add(s);
 		}
+
 	}
 
 	public void update() {
+		if (gameover)
+			return;
 		scroll();
 	}
 
 	public void scroll() {
 		for (int i = 0; i < ground.size(); i++) {
 			ground.get(i).scroll();
-			if (ground.get(i).getX() + size*2< 0) {
+			if (ground.get(i).getX() + size * 2 < 0) {
 				ground.remove(i);
 				panel.remove(ground.get(i));
 			}
@@ -146,9 +190,8 @@ public class GameWindow implements Updater {
 				b = 200;
 			else if (b > 220)
 				b = 50;
-
 			c = new Color(r, g, b);
-			Square s = new Square(ground.get(ground.size() - 1).getX() + size, height - size, c);
+			Square s = new Square(ground.get(ground.size() - 1).getX() + size, height - size, size, size, c);
 			ground.add(s);
 			panel.add(s);
 			Obstacle(s.getX(), c);
