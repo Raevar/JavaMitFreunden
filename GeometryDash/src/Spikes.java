@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Spikes extends Obstacles {
+public class Spikes extends Dangerous {
 
 	public Spikes(int x, int y, int width, int height, Color color) {
 		super(x, y - height, width, height * 2, color);

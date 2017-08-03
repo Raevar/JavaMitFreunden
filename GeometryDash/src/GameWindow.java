@@ -14,7 +14,7 @@ public class GameWindow implements Updater {
 	public static final int width = 1920;
 	public static final int height = 1080;
 	private static GameWindow instance = new GameWindow();
-	ArrayList<Obstacles> obstacles;
+	ArrayList<Blocks> obstacles;
 	ArrayList<Square> ground;
 	private int r, g, b;
 	Color c;
@@ -27,7 +27,7 @@ public class GameWindow implements Updater {
 		g = 50;
 		c = new Color(r, g, b);
 		ground = new ArrayList<Square>();
-		obstacles = new ArrayList<Obstacles>();
+		obstacles = new ArrayList<Blocks>();
 		player = new User();
 		new Timer(10, player);
 		frame = new JFrame();
@@ -82,12 +82,12 @@ public class GameWindow implements Updater {
 		if (y > height)
 			return 2;
 		if (y == height - 2 * size) {
-			for (Obstacles o : ground) {
+			for (Blocks o : ground) {
 				if (o.onTop(x, y, size, size))
 					return 1;
 			}
 		} else {
-			for (Obstacles o : obstacles) { // TODO <= +24-25
+			for (Blocks o : obstacles) { // TODO <= +24-25
 				if (o.onTop(x, y, size, size)) {
 					if (o instanceof Square)
 						return 1;
@@ -101,7 +101,7 @@ public class GameWindow implements Updater {
 
 	public int checkSide(int x, int y) {
 		// 0 alles in Ordnung 2 GameOver
-		for (Obstacles o : obstacles) {
+		for (Blocks o : obstacles) {
 			if (o.isSide(x, y, size, size)) {
 				return 2;
 			}
@@ -116,11 +116,11 @@ public class GameWindow implements Updater {
 		} catch (InterruptedException e) {
 		}
 		while (!obstacles.isEmpty()) {
-			Obstacles o = obstacles.remove(0);
+			Blocks o = obstacles.remove(0);
 			panel.remove(o);
 		}
 		while (!ground.isEmpty()) {
-			Obstacles o = ground.remove(0);
+			Blocks o = ground.remove(0);
 			panel.remove(o);
 		}
 		setUp();
@@ -133,7 +133,7 @@ public class GameWindow implements Updater {
 			e = (int) (Math.random() * 2) + 1;
 			int y = height - size * 2;
 			for (int i = 0; i < e; i++) {
-				Obstacles s = null;
+				Blocks s = null;
 				if (i == e - 1) {
 					int n = (int) (Math.random() * 2);
 					if (n == 0) {

@@ -2,10 +2,10 @@ import java.awt.Color;
 
 import javax.swing.JPanel;
 
-public class Obstacles extends JPanel {
+public class Blocks extends JPanel {
 	Color color;
 
-	public Obstacles(int x, int y,int width,int height, Color color) {
+	public Blocks(int x, int y,int width,int height, Color color) {
 		this.color = color;
 		setBounds(x, y, width+1,height);
 		setBackground(Color.black);
