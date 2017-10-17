@@ -1,9 +1,10 @@
 import java.awt.Color;
-
+import java.awt.Graphics;
 import javax.swing.JPanel;
 
 public class Blocks extends JPanel {
 	Color color;
+	Graphics g;
 
 	public Blocks(int x, int y,int width,int height, Color color) {
 		this.color = color;
@@ -12,7 +13,7 @@ public class Blocks extends JPanel {
 	}
 
 	public void scroll() {
-		setLocation(getX() - 1, getY());
+		setLocation(getX() - 15, getY());
 	}
 
 	public boolean onTop(int x, int y, int w, int h) {
@@ -23,6 +24,10 @@ public class Blocks extends JPanel {
 		if (x + w < getX() || x > getX() + getWidth() || y + h <= getY() || y >= getY() + getHeight())
 			return false;
 		return true;
+	}
+	public String toString()
+	{
+		return "Block, " + getX() + " " + getY();
 	}
 
 }

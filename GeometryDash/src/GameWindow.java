@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class GameWindow implements Updater {
+
 	JFrame frame;
 	JPanel panel;
 	User player;
@@ -14,20 +15,12 @@ public class GameWindow implements Updater {
 	public static final int width = 1920;
 	public static final int height = 1080;
 	private static GameWindow instance = new GameWindow();
-	ArrayList<Blocks> obstacles;
-	ArrayList<Square> ground;
-	private int r, g, b;
-	Color c;
+	ArrayList<Blocks> blocks;
 	Time time;
 	public static boolean gameover = false;
 
 	private GameWindow() {
-		r = 100;
-		b = 172;
-		g = 50;
-		c = new Color(r, g, b);
-		ground = new ArrayList<Square>();
-		obstacles = new ArrayList<Blocks>();
+		blocks = new ArrayList<Blocks>();
 		player = new User();
 		new Timer(10, player);
 		frame = new JFrame();
@@ -81,19 +74,12 @@ public class GameWindow implements Updater {
 	{ // 0 kein Boden 1 Boden 2 GameOver
 		if (y > height)
 			return 2;
-		if (y == height - 2 * size) {
-			for (Blocks o : ground) {
-				if (o.onTop(x, y, size, size))
+		for (Blocks o : blocks) { // TODO <= +24-25
+			if (o.onTop(x, y, size, size)) {
+				if (o instanceof Friendly)
 					return 1;
-			}
-		} else {
-			for (Blocks o : obstacles) { // TODO <= +24-25
-				if (o.onTop(x, y, size, size)) {
-					if (o instanceof Square)
-						return 1;
-					else
-						return 2;
-				}
+				else
+					return 2;
 			}
 		}
 		return 0;
@@ -101,7 +87,7 @@ public class GameWindow implements Updater {
 
 	public int checkSide(int x, int y) {
 		// 0 alles in Ordnung 2 GameOver
-		for (Blocks o : obstacles) {
+		for (Blocks o : blocks) {
 			if (o.isSide(x, y, size, size)) {
 				return 2;
 			}
@@ -115,47 +101,21 @@ public class GameWindow implements Updater {
 			Thread.sleep(3);
 		} catch (InterruptedException e) {
 		}
-		while (!obstacles.isEmpty()) {
-			Blocks o = obstacles.remove(0);
-			panel.remove(o);
-		}
-		while (!ground.isEmpty()) {
-			Blocks o = ground.remove(0);
+		while (!blocks.isEmpty()) {
+			Blocks o = blocks.remove(0);
 			panel.remove(o);
 		}
 		setUp();
 		frame.repaint();
 	}
 
-	public void Obstacle(int x, Color color) {
-		int e = (int) (Math.random() * 7);
-		if (e == 0) {
-			e = (int) (Math.random() * 2) + 1;
-			int y = height - size * 2;
-			for (int i = 0; i < e; i++) {
-				Blocks s = null;
-				if (i == e - 1) {
-					int n = (int) (Math.random() * 2);
-					if (n == 0) {
-						s = new Spikes(x, y + size / 2, size, size / 2, c);
-					} else
-						s = new Square(x, y, size, size, c);
-				} else {
-					s = new Square(x, y, size, size, c);
-				}
-				y -= size;
-				obstacles.add(s);
-				panel.add(s);
-			}
-		}
-	}
-
 	private void setUp() {
 		time.reset();
+		PatternGenerator.lvl = height - 100;
 		for (int i = 0; i < width; i += size) {
-			Square s = new Square(i, height - size, size, size, c);
+			Square s = new Square(i, height - size, size, size, PatternGenerator.c);
 			panel.add(s);
-			ground.add(s);
+			blocks.add(s);
 		}
 
 	}
@@ -167,41 +127,15 @@ public class GameWindow implements Updater {
 	}
 
 	public void scroll() {
-		for (int i = 0; i < ground.size(); i++) {
-			ground.get(i).scroll();
-			if (ground.get(i).getX() + size * 2 < 0) {
-				ground.remove(i);
-				panel.remove(ground.get(i));
+		for (int i = 0; i < blocks.size(); i++) {
+			blocks.get(i).scroll();
+			if (blocks.get(i).getX() + size * 2 < 0) {
+				blocks.remove(i);
+				panel.remove(blocks.get(i));
 			}
 		}
-		if (ground.get(ground.size() - 1).getX() < width) {
-			r += (int) (Math.random() * 5) - 2;
-			b += (int) (Math.random() * 5) - 2;
-			g += (int) (Math.random() * 5) - 2;
-			if (r < 30)
-				r = 200;
-			else if (r > 220)
-				r = 50;
-			if (g < 30)
-				g = 200;
-			else if (g > 220)
-				g = 50;
-			if (b < 30)
-				b = 200;
-			else if (b > 220)
-				b = 50;
-			c = new Color(r, g, b);
-			Square s = new Square(ground.get(ground.size() - 1).getX() + size, height - size, size, size, c);
-			ground.add(s);
-			panel.add(s);
-			Obstacle(s.getX(), c);
-		}
-		for (int i = 0; i < obstacles.size(); i++) {
-			obstacles.get(i).scroll();
-			if (obstacles.get(i).getX() + size < 0) {
-				panel.remove(obstacles.get(i));
-				obstacles.remove(i);
-			}
+		if (blocks.get(blocks.size() - 1).getX() < width) {
+			PatternGenerator.generatePattern(blocks,blocks.get(blocks.size() - 1).getX() + size);
 		}
 	}
 
