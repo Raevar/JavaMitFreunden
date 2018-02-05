@@ -25,7 +25,7 @@ public class PatternGenerator {
 		else if (blue > 220)
 			blue = 50;
 		c = new Color(red, green, blue);
-		int e = (int) (Math.random() * 5);
+		int e = (int) (Math.random() * 7);
 		switch (e) {
 		case 0:
 			simpleWay(x, pattern);
@@ -45,6 +45,12 @@ public class PatternGenerator {
 			if(lvl > 380)
 				stepUpHeavy(x, pattern);
 			break;
+		case 5:
+			if(lvl > 1080-size)
+			gapDownEasy(x,pattern);
+			break;
+		case 6:
+			gapDownComplete(x,pattern);
 		}
 		return pattern;
 
@@ -66,14 +72,13 @@ public class PatternGenerator {
 
 	private static void stepUpHeavy(int x, ArrayList<Blocks> pattern) {
 		simpleWay(x, pattern);
+		simpleWay(x+=size,pattern);
 		Blocks b = new Square(x, lvl - size, size, size, c);
 		pattern.add(b);
 		GameWindow.getInstance().panel.add(b);
 		b = new Square(x, lvl - 2*size, size, size, c);
 		pattern.add(b);
 		GameWindow.getInstance().panel.add(b);
-		simpleWay(x += size, pattern);
-		simpleWay(x += size, pattern);
 	}
 
 	private static void stepDowneasy(int x, ArrayList<Blocks> pattern) {
@@ -87,10 +92,20 @@ public class PatternGenerator {
 	private static void gap(int x, ArrayList<Blocks> pattern) {
 		simpleWay(x, pattern);
 		simpleWay(x += size, pattern);
-
-		simpleWay(x += size * 4, pattern);
-		simpleWay(x += size, pattern);
 		simpleWay(x += size, pattern);
 		}
+	
+	private static void gapDownEasy(int x, ArrayList<Blocks> pattern) {
+		simpleWay(x += size, pattern);
+		Blocks b = new Square(x += 4*size, lvl - size, size, size, c);
+		pattern.add(b);
+		GameWindow.getInstance().panel.add(b);
+	}
+	private static void gapDownComplete(int x, ArrayList<Blocks> pattern) {
+		simpleWay(x += size, pattern);
+		Blocks b = new Square(x += 4 + (1080-lvl)/size * size, lvl  =1080 - size, size, size, c);
+		pattern.add(b);
+		GameWindow.getInstance().panel.add(b);
+	}
 
 }
